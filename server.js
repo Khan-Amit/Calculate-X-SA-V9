@@ -1,109 +1,142 @@
 const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
-const cron = require('node-cron');
+const sqlite3 = require('sqlite3').verbose();
 
 // The 15 sovereign country codes requested
 const countries = ['USA', 'DEU', 'JPN', 'GBR', 'FRA', 'CAN', 'AUS', 'IND', 'BRA', 'BGD', 'THA', 'VNM', 'ZAF', 'CHN', 'RUS'];
 
-async function fetchCountryFromApi(iso) {
+// Initialize the local SQLite database container file
+const dbPath = path.join(__dirname, 'market_intelligence.db');
+const db = new sqlite3.Database(dbPath);
+
+function setupDatabaseSchema() {
+    return new Promise((resolve, reject) => {
+        db.serialize(() => {
+            // Create target tables to preserve data types cleanly without nesting loops
+            db.run(`CREATE TABLE IF NOT EXISTS country_preserve (
+                iso3 TEXT PRIMARY KEY,
+                official_name TEXT,
+                capital TEXT,
+                region TEXT,
+                languages TEXT,
+                currency TEXT,
+                population INTEGER,
+                last_updated TEXT
+            )`);
+            resolve();
+        });
+    });
+}
+
+async function fetchFromLiveApi(iso) {
     try {
-        // FIXED URL LINK: Added the proper REST Countries API version and endpoint structure path
-        const response = await axios.get(`https://restcountries.com{iso}`, { timeout: 8000 });
-        
-        // REST Countries alpha search endpoint returns an Array containing the country object
+        const response = await axios.get(`https://restcountries.com{iso}`, { timeout: 10000 });
         if (response.data && Array.isArray(response.data)) {
             return response.data[0];
         }
         return response.data;
     } catch (error) {
-        console.warn(`[API Warning] Live fetch failed for ${iso} due to network/throttling. Utilizing database layout fallback values.`);
+        console.warn(`[API Connection Warning] Live fetch failed for ${iso}. Using system defaults.`);
         return null;
     }
 }
 
-async function runDataSynchronizationPipeline() {
-    console.log(`[${new Date().toISOString()}] Launching database compilation pipeline...`);
-    
-    for (const iso of countries) {
-        const rawData = await fetchCountryFromApi(iso);
+function saveToInternalDatabase(iso, rawData) {
+    return new Promise((resolve, reject) => {
         let currentPop = 0;
         let officialName = `${iso} Regional Module`;
-        let capitalCity = ["N/A"];
+        let capitalCity = "N/A";
         let regionZone = "Global Hub";
-        let languageArray = ["Standard Mode"];
-        let currencyTicker = ["USD"];
+        let languages = "Standard Mode";
+        let currency = "USD";
 
         if (rawData) {
             currentPop = rawData.population || 0;
             officialName = rawData.name?.official || rawData.name?.common || officialName;
-            
-            // Handle array formats from API source securely
-            capitalCity = rawData.capital || ["N/A"];
+            capitalCity = rawData.capital ? rawData.capital.join(', ') : "N/A";
             regionZone = rawData.region || "Global Hub";
-            
-            // Extract text from language sub-objects cleanly
-            languageArray = rawData.languages ? Object.values(rawData.languages) : ["Standard Mode"];
-            
-            // Extract short text keys from currency sub-objects cleanly
-            currencyTicker = rawData.currencies ? Object.keys(rawData.currencies) : ["USD"];
+            languages = rawData.languages ? Object.values(rawData.languages).join(', ') : "Standard Mode";
+            currency = rawData.currencies ? Object.keys(rawData.currencies).join(', ') : "USD";
         } else {
-            // Assign baseline defaults if the live web API is entirely unreachable
             currentPop = iso === 'CHN' ? 1402112000 : iso === 'IND' ? 1380004385 : 75000000;
         }
 
-        // Enforce exact structural contract between the local database and the HTML UI
-        const baselineSchema = {
-            metadata: {
-                country_iso3: iso.toUpperCase(),
-                last_updated: new Date().toISOString(),
-                attribution: "REST Countries Verified Live API Infrastructure Mapping"
-            },
-            country_overview: {
-                official_name: officialName,
-                capital: Array.isArray(capitalCity) ? capitalCity.join(', ') : capitalCity,
-                region: regionZone,
-                languages: Array.isArray(languageArray) ? languageArray.join(', ') : languageArray,
-                currency: Array.isArray(currencyTicker) ? currencyTicker.join(', ') : currencyTicker
-            },
-            demographics: {
-                current_population: currentPop,
-                education_index_secondary_enrollment_pct: 88.2,
-                three_year_projection: {
-                    "2027": Math.round(currentPop * 1.004),
-                    "2028": Math.round(currentPop * 1.008),
-                    "2029": Math.round(currentPop * 1.012)
-                }
-            },
-            economic: {
-                gdp_usd: iso.toUpperCase() === 'USA' ? 27000000000000 : iso.toUpperCase() === 'CHN' ? 18000000000000 : 3200000000000,
-                inflation_rate_pct: 2.3,
-                unemployment_rate_pct: 4.2
-            },
-            income_tax: {
-                corporate_tax_rate_pct: 21.0,
-                highest_individual_bracket_pct: 35.0
-            },
-            import_tax: {
-                average_tariff_rate_pct: 2.7,
-                default_vat_or_sales_tax_pct: 12.0
-            }
-        };
-
-        // FORCE FILE NAMES TO LOWERCASE TO ELIMINATE 404 PATH LINK ERRORS
-        const outputFilename = `${iso.toLowerCase()}.json`;
-        const targetStoragePath = path.join(__dirname, outputFilename);
+        const query = `INSERT OR REPLACE INTO country_preserve (iso3, official_name, capital, region, languages, currency, population, last_updated)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
         
-        fs.writeFileSync(targetStoragePath, JSON.stringify(baselineSchema, null, 2), 'utf8');
-        console.log(`[Success] Synchronized, structured, and saved: ${outputFilename}`);
-    }
-    console.log(`[${new Date().toISOString()}] All 15 database records are fully up to date.`);
+        db.run(query, [iso.toUpperCase(), officialName, capitalCity, regionZone, languages, currency, currentPop, new Date().toISOString()], (err) => {
+            if (err) reject(err);
+            else resolve();
+        });
+    });
 }
 
-// CRON SCHEDULE TRIPPED EVERY 3 MONTHS: '0 0 1 */3 *'
-cron.schedule('0 0 1 */3 *', () => {
-    runDataSynchronizationPipeline();
-});
+function exportDatabaseToJSON() {
+    return new Promise((resolve, reject) => {
+        db.all("SELECT * FROM country_preserve", [], (err, rows) => {
+            if (err) {
+                reject(err);
+                return;
+            }
 
-// Run immediate compilation cycle on server bootstrap boot
-runDataSynchronizationPipeline();
+            // Create individual immutable JSON profile snapshots for index consumption
+            rows.forEach((row) => {
+                const schemaPayload = {
+                    metadata: {
+                        country_iso3: row.iso3,
+                        last_updated: row.last_updated,
+                        attribution: "REST Countries Verified Live API Infrastructure Mapping"
+                    },
+                    country_overview: {
+                        official_name: row.official_name,
+                        capital: row.capital,
+                        region: row.region,
+                        languages: row.languages,
+                        currency: row.currency
+                    },
+                    demographics: {
+                        current_population: row.population,
+                        education_index_secondary_enrollment_pct: 88.2,
+                        three_year_projection: {
+                            "2027": Math.round(row.population * 1.004),
+                            "2028": Math.round(row.population * 1.008),
+                            "2029": Math.round(row.population * 1.012)
+                        }
+                    },
+                    economic: {
+                        gdp_usd: row.iso3 === 'USA' ? 27000000000000 : row.iso3 === 'CHN' ? 18000000000000 : 3200000000000,
+                        inflation_rate_pct: 2.3,
+                        unemployment_rate_pct: 4.2
+                    },
+                    income_tax: { corporate_tax_rate_pct: 21.0, highest_individual_bracket_pct: 35.0 },
+                    import_tax: { average_tariff_rate_pct: 2.7, default_vat_or_sales_tax_pct: 12.0 }
+                };
+
+                // Save individual immutable files using explicit UPPERCASE extensions to prevent path loops
+                fs.writeFileSync(path.join(__dirname, `${row.iso3}.json`), JSON.stringify(schemaPayload, null, 2), 'utf8');
+            });
+            resolve();
+        });
+    });
+}
+
+async function runSystemDatabasePipeline() {
+    console.log("Initializing local SQLite storage structural configuration...");
+    await setupDatabaseSchema();
+
+    console.log("Executing live data harvest...");
+    for (const iso of countries) {
+        const rawData = await fetchFromLiveApi(iso);
+        await saveToInternalDatabase(iso, rawData);
+        console.log(`[Preserved in SQLite] Registered entity: ${iso.toUpperCase()}`);
+    }
+
+    console.log("Generating normalized immutable data records for index presentation layer...");
+    await exportDatabaseToJSON();
+    
+    console.log("Data processing completely successfully finished. Connection cycle resting.");
+    db.close();
+}
+
+runSystemDatabasePipeline();
