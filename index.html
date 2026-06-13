@@ -36,7 +36,6 @@
 
         .logo { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.025em; }
         .logo span { color: var(--primary-neon); font-weight: 300; }
-
         .control-panel { display: flex; gap: 1rem; align-items: center; }
 
         select, button {
@@ -88,25 +87,25 @@
 <header>
     <div class="logo">Count It <span>GLOBAL</span></div>
     <div class="control-panel">
-        <select id="country-selector" onchange="loadCountryData(this.value)">
+        <select id="country-selector" onchange="switchCountrySelection(this.value)">
             <optgroup label="Original 9 Database Modules">
-                <option value="usa.json">United States</option>
-                <option value="deu.json">Germany</option>
-                <option value="jpn.json">Japan</option>
-                <option value="gbr.json">United Kingdom</option>
-                <option value="fra.json">France</option>
-                <option value="can.json">Canada</option>
-                <option value="aus.json">Australia</option>
-                <option value="ind.json">India</option>
-                <option value="bra.json">Brazil</option>
+                <option value="USA">United States</option>
+                <option value="DEU">Germany</option>
+                <option value="JPN">Japan</option>
+                <option value="GBR">United Kingdom</option>
+                <option value="FRA">France</option>
+                <option value="CAN">Canada</option>
+                <option value="AUS">Australia</option>
+                <option value="IND">India</option>
+                <option value="BRA">Brazil</option>
             </optgroup>
             <optgroup label="Expanded Structural Modules">
-                <option value="bgd.json">Bangladesh</option>
-                <option value="tha.json">Thailand</option>
-                <option value="vnm.json">Vietnam</option>
-                <option value="zaf.json">South Africa</option>
-                <option value="chn.json">China</option>
-                <option value="rus.json">Russia</option>
+                <option value="BGD">Bangladesh</option>
+                <option value="THA">Thailand</option>
+                <option value="VNM">Vietnam</option>
+                <option value="ZAF">South Africa</option>
+                <option value="CHN">China</option>
+                <option value="RUS">Russia</option>
             </optgroup>
         </select>
         <button class="btn-print" onclick="window.print()">🖨️ Print Dashboard</button>
@@ -216,3 +215,5 @@
         <div class="grid">
             <div class="card">
                 <h3>Inbound Customs Average Duty</h3>
+                <div class="metric" id="val-tariff">-</div>
+            </div>
