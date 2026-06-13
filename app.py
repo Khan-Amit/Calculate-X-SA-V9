@@ -4,12 +4,10 @@ import sqlite3
 import urllib.request
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 
-# Core tracking criteria array mapping your 15 sovereign nodes
 COUNTRIES = ['USA', 'DEU', 'JPN', 'GBR', 'FRA', 'CAN', 'AUS', 'IND', 'BRA', 'BGD', 'THA', 'VNM', 'ZAF', 'CHN', 'RUS']
 PORT = 8000
 
 def initialize_relational_storage():
-    """Initializes local relational tables to preserve metrics safely."""
     conn = sqlite3.connect('market_intelligence.db')
     cursor = conn.cursor()
     cursor.execute('''
@@ -28,8 +26,7 @@ def initialize_relational_storage():
     conn.close()
 
 def execute_live_api_harvest_and_dump():
-    """Queries unsimulated data directly from the live API endpoints and dumps entries to the database."""
-    print("Beginning structural live REST Countries API extraction loop...")
+    print("Launching data collection from live REST Countries API endpoints...")
     conn = sqlite3.connect('market_intelligence.db')
     cursor = conn.cursor()
 
@@ -39,10 +36,15 @@ def execute_live_api_harvest_and_dump():
             req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
             with urllib.request.urlopen(req, timeout=10) as response:
                 payload = json.loads(response.read().decode())
-                raw = payload[0] if isinstance(payload, list) else payload
+                
+                # FIXED: Safely unpack the API array response before running .get() maps
+                if isinstance(payload, list) and len(payload) > 0:
+                    raw = payload[0]
+                else:
+                    raw = payload
                 
                 official_name = raw.get('name', {}).get('official', raw.get('name', {}).get('common', f"{iso} Module"))
-                capital = ", ".join(raw.get('capital', ['N/A']))
+                capital = ", ".join(raw.get('capital', ['N/A'])) if raw.get('capital') else "N/A"
                 region = raw.get('region', 'Global Hub')
                 languages = ", ".join(list(raw.get('languages', {}).values())) if raw.get('languages') else 'Standard Mode'
                 
@@ -51,7 +53,7 @@ def execute_live_api_harvest_and_dump():
                 population = raw.get('population', 0)
                 
         except Exception as e:
-            print(f"[API Warning] Connection dropped for {iso}: {e}. Initializing baseline schema properties.")
+            print(f"[API Timeout/Error] Using secure template properties for {iso}: {e}")
             official_name = f"{iso} Preserved Segment"
             capital, region, languages, currency = "N/A", "Global Zone", "English", "Sovereign Unit"
             population = 1402112000 if iso == 'CHN' else 1380004385 if iso == 'IND' else 75000000
@@ -63,7 +65,7 @@ def execute_live_api_harvest_and_dump():
         
     conn.commit()
     
-    # FIXED SNAPSHOT GENERATION LOOP: Maps tuple items out cleanly by database position index
+    # Export clean database variables directly into separate JSON configuration files
     cursor.execute("SELECT iso3, official_name, capital, region, languages, currency, population, last_updated FROM country_preserve")
     for row in cursor.fetchall():
         iso_code = row[0]
@@ -102,7 +104,7 @@ def execute_live_api_harvest_and_dump():
             json.dump(schema_snapshot, f, indent=2)
             
     conn.close()
-    print("Database synchronization sequence completely successfully.")
+    print("Database sync and local serialization successful. Local environment storage built.")
 
 class CustomCORSHTTPRequestHandler(SimpleHTTPRequestHandler):
     def end_headers(self):
@@ -122,7 +124,7 @@ def launch_local_server_environment():
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
-        print("\nShutting down server environment context smoothly.")
+        print("\nShutting down local server environment smoothly.")
         httpd.server_close()
 
 if __name__ == '__main__':
