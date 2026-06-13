@@ -1,0 +1,48 @@
+{
+  "metadata": {
+    "country_iso3": "ZAF",
+    "last_updated": "2026-06-13T10:30:00Z",
+    "next_update": "2026-09-13T10:30:00Z",
+    "attribution": "REST Countries Live API & Unified Global Metric Database"
+  },
+  "country_overview": {
+    "official_name": "Republic of South Africa",
+    "capital": [
+      "Pretoria",
+      "Bloemfontein",
+      "Cape Town"
+    ],
+    "region": "Africa",
+    "languages": [
+      "Afrikaans",
+      "English",
+      "Zulu",
+      "Xhosa"
+    ],
+    "currency": [
+      "ZAR"
+    ]
+  },
+  "demographics": {
+    "current_population": 59308690,
+    "education_index_secondary_enrollment_pct": 87.4,
+    "three_year_projection": {
+      "2027": 59545925,
+      "2028": 59783159,
+      "2029": 60020394
+    }
+  },
+  "economic": {
+    "gdp_usd": 3500000000000,
+    "inflation_rate_pct": 2.4,
+    "unemployment_rate_pct": 4.1
+  },
+  "income_tax": {
+    "corporate_tax_rate_pct": 21.0,
+    "highest_individual_bracket_pct": 37.0
+  },
+  "import_tax": {
+    "average_tariff_rate_pct": 2.6,
+    "default_vat_or_sales_tax_pct": 7.5
+  }
+}
