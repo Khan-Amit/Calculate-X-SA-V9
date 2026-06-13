@@ -1,0 +1,44 @@
+{
+  "metadata": {
+    "country_iso3": "CAN",
+    "last_updated": "2026-06-13T10:25:00Z",
+    "next_update": "2026-09-13T10:25:00Z",
+    "attribution": "REST Countries Live API & Unified Global Metric Database"
+  },
+  "country_overview": {
+    "official_name": "Canada",
+    "capital": [
+      "Ottawa"
+    ],
+    "region": "Americas",
+    "languages": [
+      "English",
+      "French"
+    ],
+    "currency": [
+      "CAD"
+    ]
+  },
+  "demographics": {
+    "current_population": 38005238,
+    "education_index_secondary_enrollment_pct": 87.4,
+    "three_year_projection": {
+      "2027": 38157259,
+      "2028": 38309280,
+      "2029": 38461301
+    }
+  },
+  "economic": {
+    "gdp_usd": 3500000000000,
+    "inflation_rate_pct": 2.4,
+    "unemployment_rate_pct": 4.1
+  },
+  "income_tax": {
+    "corporate_tax_rate_pct": 21.0,
+    "highest_individual_bracket_pct": 37.0
+  },
+  "import_tax": {
+    "average_tariff_rate_pct": 2.6,
+    "default_vat_or_sales_tax_pct": 7.5
+  }
+}
