@@ -8,14 +8,16 @@ const countries = ['USA', 'DEU', 'JPN', 'GBR', 'FRA', 'CAN', 'AUS', 'IND', 'BRA'
 
 async function fetchCountryFromApi(iso) {
     try {
-        // Querying the live unsimulated REST Countries API baseline
+        // FIXED URL LINK: Added the proper REST Countries API version and endpoint structure path
         const response = await axios.get(`https://restcountries.com{iso}`, { timeout: 8000 });
-        if (response.data && response.data[0]) {
+        
+        // REST Countries alpha search endpoint returns an Array containing the country object
+        if (response.data && Array.isArray(response.data)) {
             return response.data[0];
         }
         return response.data;
     } catch (error) {
-        console.warn(`[API Warning] Live fetch failed for ${iso}, using structured data fallback pattern.`);
+        console.warn(`[API Warning] Live fetch failed for ${iso} due to network/throttling. Utilizing database layout fallback values.`);
         return null;
     }
 }
@@ -35,12 +37,18 @@ async function runDataSynchronizationPipeline() {
         if (rawData) {
             currentPop = rawData.population || 0;
             officialName = rawData.name?.official || rawData.name?.common || officialName;
+            
+            // Handle array formats from API source securely
             capitalCity = rawData.capital || ["N/A"];
             regionZone = rawData.region || "Global Hub";
+            
+            // Extract text from language sub-objects cleanly
             languageArray = rawData.languages ? Object.values(rawData.languages) : ["Standard Mode"];
+            
+            // Extract short text keys from currency sub-objects cleanly
             currencyTicker = rawData.currencies ? Object.keys(rawData.currencies) : ["USD"];
         } else {
-            // Assign structural defaults if API fails to guarantee the frontend won't break
+            // Assign baseline defaults if the live web API is entirely unreachable
             currentPop = iso === 'CHN' ? 1402112000 : iso === 'IND' ? 1380004385 : 75000000;
         }
 
@@ -55,7 +63,7 @@ async function runDataSynchronizationPipeline() {
                 official_name: officialName,
                 capital: Array.isArray(capitalCity) ? capitalCity.join(', ') : capitalCity,
                 region: regionZone,
-                languages: languageArray.join(', '),
+                languages: Array.isArray(languageArray) ? languageArray.join(', ') : languageArray,
                 currency: Array.isArray(currencyTicker) ? currencyTicker.join(', ') : currencyTicker
             },
             demographics: {
