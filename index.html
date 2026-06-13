@@ -34,21 +34,10 @@
             z-index: 100;
         }
 
-        .logo {
-            font-size: 1.6rem;
-            font-weight: 700;
-            letter-spacing: -0.025em;
-        }
-        .logo span {
-            color: var(--primary-neon);
-            font-weight: 300;
-        }
+        .logo { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.025em; }
+        .logo span { color: var(--primary-neon); font-weight: 300; }
 
-        .control-panel {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
+        .control-panel { display: flex; gap: 1rem; align-items: center; }
 
         select, button {
             background-color: var(--card-bg);
@@ -61,136 +50,36 @@
             transition: all 0.2s ease;
         }
 
-        select:focus, button:hover {
-            border-color: var(--primary-neon);
-            outline: none;
-        }
+        select:focus, button:hover { border-color: var(--primary-neon); outline: none; }
+        button.btn-print { background-color: var(--primary-neon); color: var(--bg-dark); font-weight: 700; border: none; }
 
-        button.btn-print {
-            background-color: var(--primary-neon);
-            color: var(--bg-dark);
-            font-weight: 700;
-            border: none;
-        }
+        .nav-tabs { display: flex; background-color: var(--card-bg); border-bottom: 1px solid var(--card-border); overflow-x: auto; }
+        .tab-btn { padding: 1rem 1.5rem; border: none; background: transparent; font-weight: 600; color: var(--text-muted); border-bottom: 3px solid transparent; white-space: nowrap; }
+        .tab-btn.active { color: var(--primary-neon); border-bottom-color: var(--primary-neon); background-color: rgba(16, 185, 129, 0.05); }
 
-        .nav-tabs {
-            display: flex;
-            background-color: var(--card-bg);
-            border-bottom: 1px solid var(--card-border);
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-        .nav-tabs::-webkit-scrollbar { display: none; }
-
-        .tab-btn {
-            padding: 1rem 1.5rem;
-            border: none;
-            background: transparent;
-            font-weight: 600;
-            color: var(--text-muted);
-            border-bottom: 3px solid transparent;
-            border-radius: 0;
-            white-space: nowrap;
-        }
-        .tab-btn.active {
-            color: var(--primary-neon);
-            border-bottom-color: var(--primary-neon);
-            background-color: rgba(16, 185, 129, 0.05);
-        }
-
-        main {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 1.5rem;
-        }
-
-        .page-content {
-            display: none;
-            background-color: var(--card-bg);
-            border: 1px solid var(--card-border);
-            padding: 2.5rem;
-            border-radius: 0.75rem;
-        }
+        main { max-width: 1200px; margin: 2rem auto; padding: 0 1.5rem; }
+        .page-content { display: none; background-color: var(--card-bg); border: 1px solid var(--card-border); padding: 2.5rem; border-radius: 0.75rem; }
         .page-content.active { display: block; }
 
         h2, h3 { color: var(--primary-neon); margin-top: 0; }
         p { color: var(--text-muted); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin: 2rem 0; }
+        .card { background-color: rgba(9, 22, 16, 0.5); border: 1px solid var(--card-border); padding: 1.5rem; border-radius: 0.5rem; }
+        .metric { font-size: 2rem; font-weight: bold; color: var(--text-main); margin-top: 0.5rem; }
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin: 2rem 0;
-        }
+        table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td { text-align: left; padding: 1rem; border-bottom: 1px solid var(--card-border); }
+        th { background-color: rgba(9, 22, 16, 0.8); color: var(--primary-neon); }
 
-        .card {
-            background-color: rgba(9, 22, 16, 0.5);
-            border: 1px solid var(--card-border);
-            padding: 1.5rem;
-            border-radius: 0.5rem;
-        }
-
-        .metric {
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--text-main);
-            margin-top: 0.5rem;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1.5rem 0;
-        }
-        th, td {
-            text-align: left;
-            padding: 1rem;
-            border-bottom: 1px solid var(--card-border);
-        }
-        th {
-            background-color: rgba(9, 22, 16, 0.8);
-            color: var(--primary-neon);
-        }
-
-        .calculator-box {
-            background-color: rgba(16, 185, 129, 0.02);
-            border: 1px solid var(--card-border);
-            padding: 2rem;
-            border-radius: 0.5rem;
-            margin-top: 2rem;
-        }
-
-        .input-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        input[type="number"] {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            border: 1px solid var(--card-border);
-            padding: 0.75rem;
-            border-radius: 0.375rem;
-            width: 100%;
-            box-sizing: border-box;
-            font-size: 1rem;
-        }
-        input[type="number"]:focus {
-            border-color: var(--primary-neon);
-            outline: none;
-        }
+        .calculator-box { background-color: rgba(16, 185, 129, 0.02); border: 1px solid var(--card-border); padding: 2rem; border-radius: 0.5rem; margin-top: 2rem; }
+        .input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+        input[type="number"] { background-color: var(--bg-dark); color: var(--text-main); border: 1px solid var(--card-border); padding: 0.75rem; border-radius: 0.375rem; width: 100%; box-sizing: border-box; font-size: 1rem; }
 
         @media print {
             body { background: white; color: black; }
             header, .nav-tabs, .control-panel { display: none !important; }
             .page-content { display: block !important; page-break-after: always; border: none; padding: 0; margin-bottom: 3rem; background: transparent; }
             .page-content:last-child { page-break-after: avoid; }
-            h2, h3, th { color: #111 !important; }
-            td, th { border-bottom-color: #ccc; }
-            .card, .calculator-box { border-color: #ccc; background: transparent; }
-            .metric { color: black; }
         }
     </style>
 </head>
@@ -246,8 +135,7 @@
             </div>
             <div class="card">
                 <h3>Sync Cycle Interval</h3>
-                <!-- Dynamic calculation placeholder -->
-                <div class="metric" id="lbl-sync-days">0 Days</div>
+                <div class="metric">0 Days</div>
             </div>
             <div class="card">
                 <h3>Verification State</h3>
@@ -278,8 +166,52 @@
             </div>
             <div class="card">
                 <h3>Secondary Education Enrollment</h3>
-                <!-- Fixed ID element name matches active rendering loop -->
-                <div class="metric" id="val-secondary-education">-</div>
+                <div class="metric" id="val-edu">-</div>
             </div>
         </div>
         <h3>3-Year Fixed Population Progression Model</h3>
+        <table>
+            <thead><tr><th>Fiscal Projection Year</th><th>Projected Total Population</th></tr></thead>
+            <tbody id="wrapper-projection-rows"></tbody>
+        </table>
+    </div>
+
+    <!-- PAGE 4: ECONOMIC DATA -->
+    <div id="p-econ" class="page-content">
+        <h2>Macroeconomic Performance Indicators</h2>
+        <div class="grid">
+            <div class="card">
+                <h3>Gross Domestic Product (GDP USD)</h3>
+                <div class="metric" id="val-gdp">-</div>
+            </div>
+            <div class="card">
+                <h3>Annualized Inflation Index</h3>
+                <div class="metric" id="val-inflation">-</div>
+            </div>
+            <div class="card">
+                <h3>Unemployment Matrix Baseline</h3>
+                <div class="metric" id="val-unemployment">-</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 5: INCOME TAX -->
+    <div id="p-tax" class="page-content">
+        <h2>Sovereign Revenue & Tax Obligations</h2>
+        <div class="grid">
+            <div class="card">
+                <h3>Corporate Statutory Tax</h3>
+                <div class="metric" id="val-tax-corp">-</div>
+            </div>
+            <div class="card">
+                <h3>Peak Individual Marginal Bracket</h3>
+                <div class="metric" id="val-tax-ind">-</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 6: IMPORT TAX PROFIT CALCULATION -->
+    <div id="p-calc" class="page-content">
+        <h2>Import Profitability Assessment Model</h2>
+        <div class="grid">
+            <div class="card">
