@@ -53,7 +53,7 @@
         button.btn-print { background-color: var(--primary-neon); color: var(--bg-dark); font-weight: 700; border: none; }
 
         .nav-tabs { display: flex; background-color: var(--card-bg); border-bottom: 1px solid var(--card-border); overflow-x: auto; }
-        .tab-btn { padding: 1rem 1.5rem; border: none; background: transparent; font-weight: 600; color: var(--text-muted); border-bottom: 3px solid transparent; white-space: nowrap; }
+        .tab-btn { padding: 1rem 1.5rem; border: none; background: transparent; font-weight: 600; color: var(--text-muted); border-bottom: 3px solid transparent; white-space: nowrap; cursor: pointer; }
         .tab-btn.active { color: var(--primary-neon); border-bottom-color: var(--primary-neon); background-color: rgba(16, 185, 129, 0.05); }
 
         main { max-width: 1200px; margin: 2rem auto; padding: 0 1.5rem; }
@@ -72,7 +72,7 @@
 
         .calculator-box { background-color: rgba(16, 185, 129, 0.02); border: 1px solid var(--card-border); padding: 2rem; border-radius: 0.5rem; margin-top: 2rem; }
         .input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
-        input[type="number"] { background-color: var(--bg-dark); color: var(--text-main); border: 1px solid var(--card-border); padding: 0.75rem; border-radius: 0.375rem; width: 100%; box-sizing: border-box; font-size: 1rem; }
+        input[type="number"] { background-color: var(--bg-dark); color: var(--text-main); border: 1px solid var(--card-border); padding: 0.75rem; border-radius: 0.375rem; width: 100%; font-size: 1rem; }
 
         @media print {
             body { background: white; color: black; }
@@ -87,25 +87,25 @@
 <header>
     <div class="logo">Count It <span>GLOBAL</span></div>
     <div class="control-panel">
-        <select id="country-selector" onchange="switchCountrySelection(this.value)">
+        <select id="country-selector" onchange="loadCountryData(this.value)">
             <optgroup label="Original 9 Database Modules">
-                <option value="USA">United States</option>
-                <option value="DEU">Germany</option>
-                <option value="JPN">Japan</option>
-                <option value="GBR">United Kingdom</option>
-                <option value="FRA">France</option>
-                <option value="CAN">Canada</option>
-                <option value="AUS">Australia</option>
-                <option value="IND">India</option>
-                <option value="BRA">Brazil</option>
+                <option value="usa.json">United States</option>
+                <option value="deu.json">Germany</option>
+                <option value="jpn.json">Japan</option>
+                <option value="gbr.json">United Kingdom</option>
+                <option value="fra.json">France</option>
+                <option value="can.json">Canada</option>
+                <option value="aus.json">Australia</option>
+                <option value="ind.json">India</option>
+                <option value="bra.json">Brazil</option>
             </optgroup>
             <optgroup label="Expanded Structural Modules">
-                <option value="BGD">Bangladesh</option>
-                <option value="THA">Thailand</option>
-                <option value="VNM">Vietnam</option>
-                <option value="ZAF">South Africa</option>
-                <option value="CHN">China</option>
-                <option value="RUS">Russia</option>
+                <option value="bgd.json">Bangladesh</option>
+                <option value="tha.json">Thailand</option>
+                <option value="vnm.json">Vietnam</option>
+                <option value="zaf.json">South Africa</option>
+                <option value="chn.json">China</option>
+                <option value="rus.json">Russia</option>
             </optgroup>
         </select>
         <button class="btn-print" onclick="window.print()">🖨️ Print Dashboard</button>
@@ -134,11 +134,11 @@
             </div>
             <div class="card">
                 <h3>Sync Cycle Interval</h3>
-                <div class="metric">0 Days</div>
+                <div class="metric" id="lbl-sync-days">0 Days</div>
             </div>
             <div class="card">
                 <h3>Verification State</h3>
-                <div class="metric" style="color: var(--primary-neon);">Live API Match</div>
+                <div class="metric" style="color: var(--primary-neon);" id="lbl-verification-status">Resolving...</div>
             </div>
         </div>
     </div>
@@ -214,6 +214,3 @@
         <h2>Import Profitability Assessment Model</h2>
         <div class="grid">
             <div class="card">
-                <h3>Inbound Customs Average Duty</h3>
-                <div class="metric" id="val-tariff">-</div>
-            </div>
