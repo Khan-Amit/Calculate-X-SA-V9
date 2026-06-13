@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Count It Global - Advanced Country Intelligence Portal</title>
+    <style>
+        :root {
+            --bg-dark: #091610;
+            --card-bg: #0d2118;
+            --card-border: #163829;
+            --primary-neon: #10b981;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--bg-dark);
+            border-bottom: 1px solid var(--card-border);
+            padding: 1.25rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+        }
+        .logo span {
+            color: var(--primary-neon);
+            font-weight: 300;
+        }
+
+        .control-panel {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        select, button {
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            border: 1px solid var(--card-border);
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.5rem;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        select:focus, button:hover {
+            border-color: var(--primary-neon);
+            outline: none;
+        }
+
+        button.btn-print {
+            background-color: var(--primary-neon);
+            color: var(--bg-dark);
+            font-weight: 700;
+            border: none;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--card-border);
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .nav-tabs::-webkit-scrollbar { display: none; }
+
+        .tab-btn {
+            padding: 1rem 1.5rem;
+            border: none;
+            background: transparent;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-bottom: 3px solid transparent;
+            border-radius: 0;
+            white-space: nowrap;
+        }
+        .tab-btn.active {
+            color: var(--primary-neon);
+            border-bottom-color: var(--primary-neon);
+            background-color: rgba(16, 185, 129, 0.05);
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .page-content {
+            display: none;
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 2.5rem;
+            border-radius: 0.75rem;
+        }
+        .page-content.active { display: block; }
+
+        h2, h3 { color: var(--primary-neon); margin-top: 0; }
+        p { color: var(--text-muted); }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .card {
+            background-color: rgba(9, 22, 16, 0.5);
+            border: 1px solid var(--card-border);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+        }
+
+        .metric {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--text-main);
+            margin-top: 0.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+        th, td {
+            text-align: left;
+            padding: 1rem;
+            border-bottom: 1px solid var(--card-border);
+        }
+        th {
+            background-color: rgba(9, 22, 16, 0.8);
+            color: var(--primary-neon);
+        }
+
+        .calculator-box {
+            background-color: rgba(16, 185, 129, 0.02);
+            border: 1px solid var(--card-border);
+            padding: 2rem;
+            border-radius: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        input[type="number"] {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            border: 1px solid var(--card-border);
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+        input[type="number"]:focus {
+            border-color: var(--primary-neon);
+            outline: none;
+        }
+
+        @media print {
+            body { background: white; color: black; }
+            header, .nav-tabs, .control-panel { display: none !important; }
+            .page-content { display: block !important; page-break-after: always; border: none; padding: 0; margin-bottom: 3rem; background: transparent; }
+            .page-content:last-child { page-break-after: avoid; }
+            h2, h3, th { color: #111 !important; }
+            td, th { border-bottom-color: #ccc; }
+            .card, .calculator-box { border-color: #ccc; background: transparent; }
+            .metric { color: black; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">Count It <span>GLOBAL</span></div>
+    <div class="control-panel">
+        <!-- Dropdown supporting all 15 compiled repositories -->
+        <select id="country-selector" onchange="loadCountryData(this.value)">
+            <optgroup label="Original 9 Database Modules">
+                <option value="usa.json">United States</option>
+                <option value="deu.json">Germany</option>
+                <option value="jpn.json">Japan</option>
+                <option value="gbr.json">United Kingdom</option>
+                <option value="fra.json">France</option>
+                <option value="can.json">Canada</option>
+                <option value="aus.json">Australia</option>
+                <option value="ind.json">India</option>
+                <option value="bra.json">Brazil</option>
+            </optgroup>
+            <optgroup label="Expanded Structural Modules">
+                <option value="bgd.json">Bangladesh</option>
+                <option value="tha.json">Thailand</option>
+                <option value="vnm.json">Vietnam</option>
+                <option value="zaf.json">South Africa</option>
+                <option value="chn.json">China</option>
+                <option value="rus.json">Russia</option>
+            </optgroup>
+        </select>
+        <button class="btn-print" onclick="window.print()">🖨️ Print Dashboard</button>
+        <button onclick="downloadHTMLOutput()">💾 Download Single Report</button>
+    </div>
+</header>
+
+<div class="nav-tabs">
+    <button class="tab-btn active" onclick="switchTab(event, 'p-landing')">1. Landing Page</button>
+    <button class="tab-btn" onclick="switchTab(event, 'p-overview')">2. Country Overview</button>
+    <button class="tab-btn" onclick="switchTab(event, 'p-demo')">3. Demographics</button>
+    <button class="tab-btn" onclick="switchTab(event, 'p-econ')">4. Economic Data</button>
+    <button class="tab-btn" onclick="switchTab(event, 'p-tax')">5. Income Tax Scales</button>
+    <button class="tab-btn" onclick="switchTab(event, 'p-calc')">6. Import Profitability</button>
+</div>
+
+<main>
+    <!-- PAGE 1: LANDING PAGE -->
+    <div id="p-landing" class="page-content active">
+        <h2>Executive Data Intelligence Portal</h2>
+        <p>This automated environment extracts real data points across 15 global hubs. Database modules trigger an update check cycle every 3 months to secure chronological tracking integrity without manual calculations.</p>
+        <div class="grid">
+            <div class="card">
+                <h3>Focus Workspace</h3>
+                <div class="metric" id="lbl-target-country">-</div>
+            </div>
+            <div class="card">
+                <h3>Sync Cycle Interval</h3>
+                <div class="metric">90 Days</div>
+            </div>
+            <div class="card">
+                <h3>Verification State</h3>
+                <div class="metric" style="color: var(--primary-neon);">Live API Match</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 2: COUNTRY OVERVIEW -->
+    <div id="p-overview" class="page-content">
+        <h2>Geopolitical Overview</h2>
+        <table id="table-overview">
+            <tr><th>Official Standard Metric</th><th>Dataset Value</th></tr>
+            <tr><td>Geographic Region</td><td id="val-region">-</td></tr>
+            <tr><td>Administrative Capital</td><td id="val-capital">-</td></tr>
+            <tr><td>Recognized Languages</td><td id="val-languages">-</td></tr>
+            <tr><td>Currency Identifier</td><td id="val-currency">-</td></tr>
+        </table>
+    </div>
+
+    <!-- PAGE 3: DEMOGRAPHICS -->
+    <div id="p-demo" class="page-content">
+        <h2>Demographic Analysis & Projections</h2>
+        <div class="grid">
+            <div class="card">
+                <h3>Current Population Baseline</h3>
+                <div class="metric" id="val-pop">-</div>
+            </div>
+            <div class="card">
+                <h3>Secondary Education Enrollment</h3>
+                <div class="metric" id="val-edu">-</div>
+            </div>
+        </div>
+        <h3>3-Year Fixed Population Progression Model</h3>
+        <p>Strict historical trend lines derived directly from standard demographic indicators:</p>
+        <table>
